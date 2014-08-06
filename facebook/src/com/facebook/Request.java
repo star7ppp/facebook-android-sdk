@@ -543,6 +543,7 @@ public class Request {
      * A `null` ID will be provided into the callback if a) there is no native Facebook app, b) no one is logged into
      * it, or c) the app has previously called
      * {@link Settings#setLimitEventAndDataUsage(android.content.Context, boolean)} with `true` for this user.
+     * <b>You must call this method from a background thread for it to work properly.</b>
      *
      * @param session
      *            the Session to issue the Request on, or null; if non-null, the session must be in an opened state.
@@ -577,6 +578,7 @@ public class Request {
      * A `null` ID will be provided into the callback if a) there is no native Facebook app, b) no one is logged into
      * it, or c) the app has previously called
      * {@link Settings#setLimitEventAndDataUsage(android.content.Context, boolean)} ;} with `true` for this user.
+     * <b>You must call this method from a background thread for it to work properly.</b>
      *
      * @param session
      *            the Session to issue the Request on, or null; if non-null, the session must be in an opened state.

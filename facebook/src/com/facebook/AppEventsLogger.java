@@ -639,15 +639,20 @@ public class AppEventsLogger {
         logEvent(context, event, accessTokenAppId);
     }
 
-    private static void logEvent(Context context, AppEvent event, AccessTokenAppIdPair accessTokenAppId) {
+    private static void logEvent(final Context context, final AppEvent event, final AccessTokenAppIdPair accessTokenAppId) {
         if(shouldSuppressEvent(event)) {
             return;
         }
 
-        SessionEventsState state = getSessionEventsState(context, accessTokenAppId);
-        state.addEvent(event);
+        Settings.getExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                SessionEventsState state = getSessionEventsState(context, accessTokenAppId);
+                state.addEvent(event);
 
-        flushIfNecessary();
+                flushIfNecessary();
+            }
+        });
     }
 
     // This will also update the timestamp based on specified behavior.
