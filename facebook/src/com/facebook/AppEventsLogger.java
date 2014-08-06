@@ -710,13 +710,19 @@ public class AppEventsLogger {
 
     // Creates a new SessionEventsState if not already in the map.
     private static SessionEventsState getSessionEventsState(Context context, AccessTokenAppIdPair accessTokenAppId) {
+    	// Do this work outside of the lock to prevent deadlocks in implementation of
+    	//  AdvertisingIdClient.getAdvertisingIdInfo, because that implementation blocks waiting on the main thread,
+    	//  which may also grab this staticLock.
+    	SessionEventsState state = stateMap.get(accessTokenAppId);
+    	AttributionIdentifiers attributionIdentifiers = null;
+    	if (state == null) {
+    	    // Retrieve attributionId, but we will only send it if attribution is supported for the app.
+    	    attributionIdentifiers = AttributionIdentifiers.getAttributionIdentifiers(context);
+    	}
         synchronized (staticLock) {
-            SessionEventsState state = stateMap.get(accessTokenAppId);
+        	// Check state again while we're locked.
+        	state = stateMap.get(accessTokenAppId);
             if (state == null) {
-                // Retrieve attributionId, but we will only send it if attribution is supported for the app.
-                AttributionIdentifiers attributionIdentifiers =
-                    AttributionIdentifiers.getAttributionIdentifiers(context);
-
                 state = new SessionEventsState(attributionIdentifiers, context.getPackageName(), hashedDeviceAndAppId);
                 stateMap.put(accessTokenAppId, state);
             }
